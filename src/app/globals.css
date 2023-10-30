@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  /* font-family: "Times New Roman", Times, serif; */
+  background-color: #202020f5;
+  color: rgba(226, 226, 225, 0.912);
+  font-size: 18px;
+}
+input {
+  color: antiquewhite;
+  background-color: #0f0f0ff5;
+  color-scheme: dark;
+  outline: none;
+}
+select {
+  background-color: #0f0f0ff5;
+  outline: none;
+  font-size: 15px;
+}
+option {
+  background-color: #0f0f0ff5;
+}
+h1 {
+  font-size: 16px;
+}
+h3 {
+  font-size: 15px;
+}
+p {
+  font-size: 14px;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
