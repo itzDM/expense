@@ -1,15 +1,24 @@
 import Expense from "@/app/models/expenseModel";
 import { db } from "@/app/utils/db";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { getAuthSession } from "../../auth/[...nextauth]/authOptions";
 
-export const GET = async () => {
+export const GET = async (req: NextRequest) => {
   const session = await getAuthSession();
   if (session) {
     try {
       await db();
+      const { searchParams } = new URL(req.url);
 
-      const allExpense = await Expense.find({}, { paidTo: 1, by: 1, _id: 0 });
+      const startDate = searchParams.get("startDate");
+      const endDate = searchParams.get("endDate");
+
+      const allExpense = await Expense.find(
+        {
+          createdAt: { $gte: startDate, $lte: endDate },
+        },
+        { paidTo: 1, by: 1, _id: 0 }
+      );
 
       const filterOpt: string[] = ["ALL"];
       allExpense?.filter((item) => {

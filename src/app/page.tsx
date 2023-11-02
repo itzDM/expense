@@ -17,6 +17,8 @@ export default function Home() {
 
   const router = useRouter();
 
+  //
+
   const date: Date = new Date();
   const startDateFormat =
     date.getFullYear() +
@@ -43,12 +45,6 @@ export default function Home() {
   const [sort, setSort] = useState<string>("createdAt,-1");
   const [type, setType] = useState<string>("ALL");
 
-  useEffect(() => {
-    if (session.status === "unauthenticated") {
-      router?.push("/login");
-    }
-  }, [session]);
-
   // Fetch data
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -60,10 +56,16 @@ export default function Home() {
     { refreshInterval: 1000 }
   );
 
-  // End of Fetch Data
+  // End
 
   let total: number = 0;
   data?.map((item: any) => (total += item.amount));
+
+  useEffect(() => {
+    if (session?.status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [session]);
 
   return (
     <div className=" mx-4 lg:mx-10">
@@ -75,11 +77,18 @@ export default function Home() {
           setStartDate={setStartDate}
           setEndDate={setEndDate}
         />
-        <Filter setSort={setSort} setType={setType} />
+
         {isLoading || session?.status === "loading" ? (
           <Skelton />
         ) : (
           <div>
+            <Filter
+              setSort={setSort}
+              setType={setType}
+              startDate={startDate}
+              endDate={endDate}
+              type={type}
+            />
             <Details data={data} /> <Total totalExpense={total} />
           </div>
         )}

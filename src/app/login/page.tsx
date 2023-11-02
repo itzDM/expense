@@ -1,29 +1,36 @@
 "use client";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 
 const Login = () => {
-  const [err, setErr] = useState(null);
-  const { status } = useSession();
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
   const router = useRouter();
+  const { status } = useSession();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/");
+    }
+  }, [status]);
 
   const handelLogin = async (e: any) => {
     e.preventDefault();
     const userName = e.target[0].value;
     const password = e.target[1].value;
     try {
-      signIn("credentials", { userName, password, redirect: false }).then(
-        ({ ok, error }) => {
-          if (ok) {
-            router.push("/");
-          } else {
-            setErr(error);
-          }
-        }
-      );
+      setLoading(true);
+      const res = await signIn("credentials", {
+        userName,
+        password,
+        redirect: false,
+      });
+      setLoading(false);
+      if (res?.error) return setErr(res.error);
+      router.replace("/");
     } catch (error: any) {
-      console.log(error);
+      setLoading(false);
       setErr(error.message);
     }
   };
@@ -47,7 +54,11 @@ const Login = () => {
             name="password"
             required
           />
-          <button className="border rounded-lg w-2/5 m-auto border-orange-300 bg-slate-700">
+          <button
+            className="border rounded-lg w-2/5 m-auto border-orange-300 bg-slate-700"
+            disabled={loading}
+            style={{ opacity: loading ? 0.5 : 1 }}
+          >
             Login
           </button>
         </form>

@@ -3,10 +3,12 @@ const expenseSchema = new mongoose.Schema({
   paidTo: {
     type: String,
     required: [true, "Paid Is Requirement Field"],
+    trim: true,
   },
   by: {
     type: String,
     required: [true, "From Whom Is Requirement Field"],
+    trim: true,
   },
 
   desc: {
@@ -16,6 +18,7 @@ const expenseSchema = new mongoose.Schema({
   amount: {
     type: Number,
     required: [true, "Amount Can't be Null"],
+    trim: true,
   },
   createdAt: {
     type: Date,

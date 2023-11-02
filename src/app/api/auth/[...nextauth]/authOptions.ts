@@ -1,29 +1,34 @@
 import { NextAuthOptions, getServerSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import { db } from "@/app/utils/db";
 import User from "@/app/models/userModel";
+
 export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: "jwt",
+  },
   providers: [
     CredentialsProvider({
-      id: "credentials",
-      name: "Credentials",
+      type: "credentials",
+      credentials: {},
       async authorize(credentials) {
+        const { userName, password } = credentials as {
+          userName: string;
+          password: string;
+        };
         await db();
 
-        let returnValue;
         try {
           const user = await User.findOne({
-            userName: credentials?.userName,
+            userName: userName,
           });
 
           if (user) {
-            const isPassCorrect = await bcrypt.compare(
-              credentials?.password,
-              user.password
-            );
+            const isPassCorrect = bcrypt.compareSync(password, user.password);
             if (isPassCorrect) {
-              return user;
+              const { password, ...info } = user._doc;
+              return info;
             } else {
               throw new Error("Wrong Credentials");
             }
@@ -38,14 +43,16 @@ export const authOptions: NextAuthOptions = {
   ],
 
   callbacks: {
-    async jwt({ user, token }) {
-      if (user) {
-        token.user = user;
+    async jwt(params: any) {
+      if (params.user?.isAdmin) {
+        params.token.isAdmin = params.user.isAdmin;
+        params.token._id = params.user._id;
       }
-      return token;
+      return params.token;
     },
     async session({ session, token }) {
-      session.user = token.user;
+      (session.user as { _id: string })._id = token._id as string;
+      (session.user as { isAdmin: boolean }).isAdmin = token.isAdmin as boolean;
       return session;
     },
   },

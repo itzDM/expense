@@ -6,7 +6,6 @@ export const db = async () => {
 
     const connectDb = await connect(process.env.MONGO_URI!);
     isConnected = true;
-    console.log("Database is Connected With ", connectDb.connection.host);
   } catch (err) {
     console.log(err);
     process.exit();

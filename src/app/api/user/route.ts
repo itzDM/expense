@@ -1,7 +1,7 @@
 import User from "@/app/models/userModel";
 import { db } from "@/app/utils/db";
 import { NextRequest, NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 
 export const POST = async (req: NextRequest, res: NextResponse) => {
   const { userName, password } = await req.json();
@@ -10,7 +10,7 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
   const user = await User.findOne({ userName: userName });
 
   if (!user) {
-    const hasPass = await bcrypt.hash(password, 5);
+    const hasPass = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
 
     const newUser = new User({
       userName: userName,
@@ -23,8 +23,7 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
       return new NextResponse(error);
     }
   } else {
-    return new NextResponse("User Already Exits"
-    , {
+    return new NextResponse("User Already Exits", {
       status: 501,
     });
   }

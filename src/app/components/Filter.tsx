@@ -6,13 +6,16 @@ import { useSession } from "next-auth/react";
 interface propType {
   setSort: Dispatch<SetStateAction<string>>;
   setType: Dispatch<SetStateAction<string>>;
+  startDate: string;
+  endDate: string;
+  type: string;
 }
 
-const Filter = ({ setSort, setType }: propType) => {
+const Filter = ({ setSort, setType, startDate, endDate, type }: propType) => {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/expense/expensetype`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/expense/expensetype?startDate=${startDate}&endDate=${endDate}`,
     fetcher
   );
 
@@ -27,7 +30,7 @@ const Filter = ({ setSort, setType }: propType) => {
           <select
             className="p-1 border border-sky-800  rounded mr-4"
             onChange={(e) => setType(e.target.value)}
-            // defaultValue="ALL"
+            defaultValue={type}
           >
             {data?.map((item: string) => (
               <option value={item} key={item}>

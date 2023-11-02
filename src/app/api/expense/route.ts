@@ -5,6 +5,7 @@ import { getAuthSession } from "../auth/[...nextauth]/authOptions";
 
 export const GET = async (req: NextRequest) => {
   const session = await getAuthSession();
+  
   if (session) {
     try {
       await db();
