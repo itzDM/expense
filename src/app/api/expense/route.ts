@@ -5,7 +5,7 @@ import { getAuthSession } from "../auth/[...nextauth]/authOptions";
 
 export const GET = async (req: NextRequest) => {
   const session = await getAuthSession();
-  
+
   if (session) {
     try {
       await db();
@@ -152,7 +152,6 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
         status: 201,
       });
     } catch (error) {
-      console.log(error);
       return new NextResponse(
         JSON.stringify({ error: "Something Went Wrong" }),
         {

@@ -17,12 +17,12 @@ const Login = () => {
 
   const handelLogin = async (e: any) => {
     e.preventDefault();
-    const userName = e.target[0].value;
+    const email = e.target[0].value;
     const password = e.target[1].value;
     try {
       setLoading(true);
       const res = await signIn("credentials", {
-        userName,
+        email,
         password,
         redirect: false,
       });

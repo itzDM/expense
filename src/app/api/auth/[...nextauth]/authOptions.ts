@@ -1,8 +1,21 @@
-import { NextAuthOptions, getServerSession } from "next-auth";
+import { NextAuthOptions, User, getServerSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import { db } from "@/app/utils/db";
-import User from "@/app/models/userModel";
+import UserModel from "@/app/models/userModel";
+
+declare module "next-auth" {
+  interface Session {
+    user: User & {
+      isAdmin: Boolean;
+    };
+  }
+}
+declare module "next-auth/jwt" {
+  interface JWT {
+    isAdmin: Boolean;
+  }
+}
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -13,15 +26,16 @@ export const authOptions: NextAuthOptions = {
       type: "credentials",
       credentials: {},
       async authorize(credentials) {
-        const { userName, password } = credentials as {
-          userName: string;
+        const { email, password } = credentials as {
+          email: string;
           password: string;
         };
+
         await db();
 
         try {
-          const user = await User.findOne({
-            userName: userName,
+          const user = await UserModel.findOne({
+            email: email,
           });
 
           if (user) {
@@ -43,17 +57,16 @@ export const authOptions: NextAuthOptions = {
   ],
 
   callbacks: {
-    async jwt(params: any) {
-      if (params.user?.isAdmin) {
-        params.token.isAdmin = params.user.isAdmin;
-        params.token._id = params.user._id;
-      }
-      return params.token;
-    },
     async session({ session, token }) {
-      (session.user as { _id: string })._id = token._id as string;
-      (session.user as { isAdmin: boolean }).isAdmin = token.isAdmin as boolean;
+      if (token) {
+        session.user.isAdmin = token.isAdmin;
+      }
       return session;
+    },
+    async jwt({ token }) {
+      const userInDb = await UserModel.findOne({ email: token.email });
+      token.isAdmin = userInDb.isAdmin;
+      return token;
     },
   },
 };

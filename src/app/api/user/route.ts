@@ -4,16 +4,16 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 
 export const POST = async (req: NextRequest, res: NextResponse) => {
-  const { userName, password } = await req.json();
+  const { email, password } = await req.json();
   await db();
 
-  const user = await User.findOne({ userName: userName });
+  const user = await User.findOne({ email: email });
 
   if (!user) {
     const hasPass = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
 
     const newUser = new User({
-      userName: userName,
+      email: email,
       password: hasPass,
     });
     try {
