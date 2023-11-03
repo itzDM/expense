@@ -20,7 +20,7 @@ const Add = ({ setOpen }: { setOpen: Dispatch<SetStateAction<boolean>> }) => {
     const date = e.target[4].value;
 
     try {
-      const res = await fetch("http://localhost:3000/api/expense", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/expense`, {
         method: "POST",
         cache: "no-store",
         headers: { "Content-Type": "application/json" },
