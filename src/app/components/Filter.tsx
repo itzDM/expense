@@ -9,9 +9,17 @@ interface propType {
   startDate: string;
   endDate: string;
   type: string;
+  sort: string;
 }
 
-const Filter = ({ setSort, setType, startDate, endDate, type }: propType) => {
+const Filter = ({
+  setSort,
+  setType,
+  startDate,
+  endDate,
+  type,
+  sort,
+}: propType) => {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
   const { data, error, isLoading } = useSWR(
@@ -41,6 +49,7 @@ const Filter = ({ setSort, setType, startDate, endDate, type }: propType) => {
           <select
             className="p-1 border border-sky-800  rounded ml-4"
             onChange={(e) => setSort(e.target.value)}
+            defaultValue={sort}
           >
             <option value="createdAt,-1">Latest</option>
             <option value="amount,1">Low-High</option>

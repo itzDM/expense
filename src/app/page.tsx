@@ -83,6 +83,7 @@ export default function Home() {
         ) : (
           <div>
             <Filter
+              sort={sort}
               setSort={setSort}
               setType={setType}
               startDate={startDate}
